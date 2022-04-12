@@ -11,7 +11,7 @@ fun is_older(firstDate : (int * int * int), secondDate : (int * int * int)) =
             else false
 
 
-fun number_in_month(datesList : (int * int * int) positiveNumbersList, month : int) =
+fun number_in_month(datesList : (int * int * int) list, month : int) =
     if null datesList
     then 0
     else 
@@ -20,7 +20,7 @@ fun number_in_month(datesList : (int * int * int) positiveNumbersList, month : i
         else number_in_month((tl datesList), month)
 
 
- fun number_in_months(dateList : (int * int * int) positiveNumbersList, months : int positiveNumbersList) =
+ fun number_in_months(dateList : (int * int * int) list, months : int list) =
     if null dateList
     then 0
     else
@@ -29,7 +29,7 @@ fun number_in_month(datesList : (int * int * int) positiveNumbersList, month : i
         else number_in_month(dateList, hd months) + number_in_months(dateList, tl months);
 
 
-fun dates_in_month(dateList : (int * int * int) positiveNumbersList, months : int) =
+fun dates_in_month(dateList : (int * int * int) list, months : int) =
     if null dateList
     then []
     else 
@@ -39,7 +39,7 @@ fun dates_in_month(dateList : (int * int * int) positiveNumbersList, months : in
 
 
 
-fun dates_in_months(dateList : (int * int * int) positiveNumbersList, months : int positiveNumbersList) =
+fun dates_in_months(dateList : (int * int * int) list, months : int list) =
     if null dateList
     then []
     else 
@@ -51,7 +51,7 @@ fun dates_in_months(dateList : (int * int * int) positiveNumbersList, months : i
             else dates_in_months(dateList, tl months);
 
 
-fun get_nth(positiveNumbersList : string positiveNumbersList, n : int) =
+fun get_nth(positiveNumbersList : string list, n : int) =
     if null positiveNumbersList
     then ""
     else
@@ -61,11 +61,15 @@ fun get_nth(positiveNumbersList : string positiveNumbersList, n : int) =
 
 
 fun date_to_string(date : (int * int * int)) =
-    get_nth(["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"], #2 date) 
-        ^ " "
-        ^ Int.toString(#3 date)
-        ^ ", "
-        ^ Int.toString(#1 date)
+    let 
+        val months : string list = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    in
+        get_nth(months, #2 date) 
+            ^ " "
+            ^ Int.toString(#3 date)
+            ^ ", "
+            ^ Int.toString(#1 date)
+    end;
 
 
 fun number_before_reaching_sum(sum : int, positiveNumbersList : int list) =
@@ -76,13 +80,18 @@ fun number_before_reaching_sum(sum : int, positiveNumbersList : int list) =
             fun check_next_item(n : int, count : int, positiveNumbersList : int list) =
                 if (hd positiveNumbersList + count) >= sum
                 then n
-                else number_before_helper(n + 1, count + hd positiveNumbersList, tl positiveNumbersList)
+                else check_next_item(n + 1, count + hd positiveNumbersList, tl positiveNumbersList)
         in
             check_next_item(0, 0, positiveNumbersList)
         end
 
 
-fun what_month(day : int) = number_before_reaching_sum(day, [31, 28, 31, 30, 31, 30, 31,31, 30, 31, 30, 31]) + 1;
+fun what_month(day : int) =
+    let 
+        val daysInMonth = [31,28,31,30,31,30,31,31,30,31,30,31]
+    in
+        number_before_reaching_sum(day, daysInMonth) + 1
+    end;
 
 
 fun month_range(day1 : int, day2 : int) =
@@ -138,7 +147,7 @@ fun number_in_month_test() =
             then print("Test 2 failed")
             else print("All tests passed!");
 
-number_in_month_test()
+number_in_month_test();
 
 fun number_in_months_test() =
     if number_in_months([(2021,9,10),(2020,10,10),(2020,10,11),(2020,11,20),(2020,11,21)],[10,11]) <> 4
@@ -193,9 +202,12 @@ fun get_nth_test() =
 get_nth_test();
 
 fun date_to_string_test() =
-    if  date_to_string(2020,10,10) <> "October 10, 2020"
+    if date_to_string(2020,10,10) <> "October 10, 2020"
     then print("Test 1 failed!")
-    else print("All tests passed!");
+    else 
+        if date_to_string(2021,12,31) <> "December 31, 2021"
+        then print("Test 2 failed!")
+        else print("All tests passed!");
 
 date_to_string_test();
 
